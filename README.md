@@ -98,11 +98,6 @@ lexer me har ek word ka token create kiya hai.
  int num = 10;
 ```
 
-#### **Float**
-```my
- float num = 10.0;
-```
-
 #### **char**
 ```my
  char num = '5';
@@ -123,3 +118,27 @@ lexer me har ek word ka token create kiya hai.
 ```my
  int num = ask("Enter num :- ");
 ```
+
+## Output Function 
+
+Is langunage me kuch bhi agar aap ko output me display karna hai to uske liye aap ko print keyword ka use karna hoga aur usme data pass kariye waha data ko output ke roop me terminal me display kara dega lekin ek baat ka dhyan rahe ki print function khatam hone ke baad aap ko semicolor lagana padega.
+
+### Example
+
+```.my
+   print("string",variables,end=bool); 
+```
+
+### Code 
+```
+ int a = 10;
+ print("your number is  : ",a); 
+```
+
+### Output
+
+```
+your number is : 10 
+```
+
+

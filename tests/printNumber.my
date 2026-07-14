@@ -1,0 +1,3 @@
+int a = ask("Enter your first Number : ");
+int b= ask("Enter your second Number : ");
+print("Total Calulation : ",a+b);

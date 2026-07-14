@@ -150,21 +150,29 @@ void Parser::parseDeclaration()
         cout << prompt;
 
         string inputValue;
-        getline(cin,inputValue);
+        getline(cin, inputValue);
 
         symbolTable.insert(variableName, dataType, inputValue);
 
         return;
     }
 
-    data = peek().value;
-    if (!(match(TokenType::Numbers, peek().value) ||
-          match(TokenType::String, peek().value) ||
-          match(TokenType::Chars, peek().value)))
+    if (dataType == "int" || dataType == "float")
     {
+        int value = parseExpression(); // expression evaluate karega
 
-        cout << "Expected Data" << endl;
-        return;
+        data = to_string(value);
+    }
+    else
+    {
+        data = peek().value;
+
+        if (!(match(TokenType::String, peek().value) ||
+              match(TokenType::Chars, peek().value)))
+        {
+            cout << "Expected Data" << endl;
+            return;
+        }
     }
     if (!match(TokenType::Semicolon, ";"))
     {
@@ -194,7 +202,44 @@ void Parser::parseAssignment()
     match(TokenType::Identifier, variableName);
     match(TokenType::Operator, "=");
     string data = peek().value;
-    match(TokenType::Numbers, data) || match(TokenType::String, data) || match(TokenType::Chars, data);
+        
+     cout<<data<<endl; 
+     
+   Variable var = symbolTable.get(variableName);
+
+  string variableType = var.type; 
+  Token valueToken = peek();
+   
+
+  if (variableType == "int")
+  {
+    if (valueToken.type != TokenType::Numbers)
+    {
+        cout << "Type Error : int variable cannot store "
+             << valueToken.value << endl;
+        return;
+    }
+    
+    int value = parseExpression();
+
+     data = to_string(value);
+}
+else if (variableType == "string")
+{
+    if (valueToken.type != TokenType::String)
+    {
+        cout << "Type Error : string variable expected." << endl;
+        return;
+    }
+}
+else if (variableType == "char")
+{
+    if (valueToken.type != TokenType::Chars)
+    {
+        cout << "Type Error : char variable expected." << endl;
+        return;
+    }
+}
 
     match(TokenType::Semicolon, ";");
     if (!symbolTable.exists(variableName))
@@ -205,8 +250,10 @@ void Parser::parseAssignment()
     symbolTable.update(variableName, data);
 }
 
+
 void Parser::parsePrint()
 {
+    bool endline=true;
 
     // print
     if (!match(TokenType::Keyword, "print"))
@@ -223,10 +270,9 @@ void Parser::parsePrint()
     }
 
     // Variable print
-
     if (peek().type == TokenType::Identifier)
     {
-
+         
         string variableName = peek().value;
 
         if (!match(TokenType::Identifier, variableName))
@@ -242,7 +288,7 @@ void Parser::parsePrint()
         }
 
         Variable var = symbolTable.get(variableName);
-        cout << var.value << endl;
+        cout << var.value;
     }
 
     // String print
@@ -253,18 +299,16 @@ void Parser::parsePrint()
 
         match(TokenType::String, value);
 
-        cout << value << endl;
+        cout << value;
     }
-
     // Number print
-    else if (peek().type == TokenType::Numbers)
-    {
+    else if (peek().type == TokenType::Numbers){  
+     int value = parseExpression(); // expression evaluate karega
+        string data = to_string(value);
 
-        string value = peek().value;
+        match(TokenType::Numbers,data);
 
-        match(TokenType::Numbers, value);
-
-        cout << value << endl;
+        cout << value;
     }
 
     else
@@ -272,8 +316,52 @@ void Parser::parsePrint()
         cout << "Invalid print argument" << endl;
         return;
     }
+     while (peek().value == ","){
+        match(TokenType::Operator, ",");
 
-    // )
+         if (peek().type == TokenType::Keyword &&
+        peek().value == "end")
+    {
+        match(TokenType::Keyword, "end");
+        match(TokenType::Operator, "=");
+
+        if (match(TokenType::Keyword, "true"))
+        {
+           endline=true;
+        }
+        else if (match(TokenType::Keyword, "false"))
+        {
+          endline=false;
+        }
+        else
+        {
+            cout << "Expected true or false" << endl;
+            return;
+        }
+
+        continue;
+    }
+         if (peek().type == TokenType::Identifier){
+         int value = parseExpression();
+          cout << value;
+    }
+        else if (peek().type == TokenType::String)
+        {
+
+            string value = peek().value;
+
+            match(TokenType::String, value);
+
+            cout << value;
+        }
+        else if (peek().type == TokenType::Numbers)
+        {
+            int value = parseExpression(); // expression evaluate karega
+
+            string data = to_string(value);
+            cout << value;
+        }
+    }
     if (!match(TokenType::Operator, ")"))
     {
         cout << "Expected ')'" << endl;
@@ -285,6 +373,9 @@ void Parser::parsePrint()
     {
         cout << "Expected ';'" << endl;
         return;
+    }
+    if(endline){
+        cout<<endl;
     }
 }
 
@@ -367,4 +458,110 @@ void Parser::parseInput()
     symbolTable.insert(variableName, dataType, inputValue);
 
     cout << variableName << " = " << inputValue << endl;
+}
+
+// ================================================================================================
+//   yah parseExpression function tab call hota hia jab = ke baad number ho uskebaad left side se
+//  expression ko solve karna start karta hai
+// ================================================================================================
+
+int Parser::parseExpression()
+{
+    int left = parseTerm();
+
+    while (peek().value == "+" || peek().value == "-")
+    {
+        string op = peek().value;
+        advance();
+
+        int right = parseTerm();
+
+        if (op == "+")
+            left += right;
+        else
+            left -= right;
+    }
+
+    return left;
+}
+
+// ================================================================================================
+//   yah parseExpression function tab call hota hia jab = ke baad number ho uskebaad left side se
+//   factors ko solve karne ki kois karta hai  ko solve karna start karta hai
+// ================================================================================================
+
+int Parser::parseTerm()
+{
+    int left = parseFactor();
+
+    while (peek().value == "*" || peek().value == "/")
+    {
+        string op = peek().value;
+        advance();
+
+        int right = parseFactor();
+
+        if (op == "*")
+            left *= right;
+        else
+            left /= right;
+    }
+
+    return left;
+}
+
+int Parser::parseFactor()
+{
+    if (peek().type == TokenType::Numbers)
+    {
+        int value = stoi(peek().value);
+        advance();
+        return value;
+    }
+
+    if (peek().type == TokenType::Identifier)
+    {
+        string name = peek().value;
+        advance();
+
+        return symbolTable.getInt(name); // variable ki value
+    }
+
+    if (peek().value == "(")
+    {
+        advance();
+
+        int value = parseExpression();
+
+        match(TokenType::Operator, ")");
+
+        return value;
+    }
+
+    error("Expected value", peek().value);
+    return 0;
+}
+
+
+ string Parser::tokenTypeToString(TokenType type)
+{
+    switch (type)
+    {
+    case TokenType::Keyword:
+        return "Keyword";
+    case TokenType::Identifier:
+        return "Identifier";
+    case TokenType::Numbers:
+        return "Numbers";
+    case TokenType::Operator:
+        return "Operator";
+    case TokenType::String:
+        return "String";
+    case TokenType::Chars:
+        return "Chars";
+    case TokenType::Semicolon:
+        return "Semicolon";
+    default:
+        return "Unknown";
+    }
 }

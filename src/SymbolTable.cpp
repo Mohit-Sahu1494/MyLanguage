@@ -15,15 +15,12 @@ void SymbolTable::update(string name,string value){
     }
 }
 
+int SymbolTable::getInt(string name)
+{
+    Variable var = get(name);
+    return stoi(var.value);
+}
+
 Variable SymbolTable::get(string name) {
     return table[name];
-}
-void SymbolTable::print() {
-    cout<<"table size :- "<<table.size()<<endl;
-    for (auto &var : table) {
-        cout << "Name  : " << var.first <<endl;
-        cout << "Type  : " << var.second.type << endl;
-        cout << "Value : " << var.second.value << endl;
-        cout << "------------------------" << endl;
-    }
 }

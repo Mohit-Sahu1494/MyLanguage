@@ -15,6 +15,10 @@ unordered_set<string> keyWords = {
     "string",
     "print",
     "ask",
+    "bool",
+    "true",
+    "false",
+    "end",
 };
 
 unordered_set<string> operators = {
@@ -25,6 +29,7 @@ unordered_set<string> operators = {
     "=",
     "(",
     ")",
+    ",",
 };
 
 unordered_set<string> lineterminated = {

@@ -5,27 +5,32 @@
 #include <sstream>
 
 using namespace std;
-int main() {
 
-    ifstream file("second.my");
+int main(int argc, char* argv[])
+{
+    if (argc < 2)
+    {
+        cout << "Usage: mylang <filename>" << endl;
+        return 1;
+    }
 
-    if (!file.is_open()) {
+    string filename = argv[1];
+
+    ifstream file(filename);
+
+    if (!file)
+    {
         cout << "File not found!" << endl;
         return 1;
     }
 
-    stringstream buffer;
-    buffer << file.rdbuf();
+    string source(
+        (istreambuf_iterator<char>(file)),
+        istreambuf_iterator<char>());
 
-    string sourceCode = buffer.str();
-    Lexer lexer(sourceCode);
-
-    vector<Token> tokens = lexer.tokenize();
+    Lexer lexer(source);
+    auto tokens = lexer.tokenize();
 
     Parser parser(tokens);
     parser.parse();
-
-    return 0;
 }
-
- 

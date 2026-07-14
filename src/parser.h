@@ -28,4 +28,9 @@ void parseProgram();
  void parsePrint();
   void parseInput();
   void error(string message,string data);
+  int parseExpression();
+  int parseTerm();
+  int parseFactor();
+ string tokenTypeToString(TokenType type);
+
  };

@@ -19,4 +19,6 @@ public:
     Variable get(string name);
     void update(string name, string value);
     void print();
+    int getInt(string name);
+
 };

@@ -542,6 +542,55 @@ int Parser::parseFactor()
     return 0;
 }
 
+  int Parser::parseTypeOfVariable(string variableName)
+  {
+       string variableName;
+      if(!match(TokenType::Keyword,"typeOf")){
+         cout<<"Unexpeted keyword "<<endl;
+         return -1;
+      }
+      if(!match(TokenType::Operator,"(")){
+          cout<<"Unexpeted Operator "<<endl;
+         return -1;
+      }
+        variableName=peek().value;
+      if(!match(TokenType::Identifier,peek().value)){
+         cout<<"Unexpeted variable "<<endl;
+         return -1;
+      }
+
+      if (!symbolTable.exists(variableName))
+       {
+          cout << "Variable not declared" << endl;
+          return -1; // Variable not found
+      }
+    if(!match(TokenType::Operator,")")){
+          cout<<"Unexpeted Operator "<<endl;
+         return -1;
+      } 
+        if(!match(TokenType::Semicolon,";")){
+          cout<<"expected semicolon "<<endl;
+         return -1;
+      } 
+      
+
+      Variable var = symbolTable.get(variableName);
+      string variableType = var.type;
+
+      if (variableType == "int")
+          return 0;
+      else if (variableType == "float")
+          return 1;
+      else if (variableType == "char")
+          return 2;
+      else if (variableType == "string")
+          return 3;
+
+      return -1; // Unknown type
+  }
+  
+
+
 
  string Parser::tokenTypeToString(TokenType type)
 {

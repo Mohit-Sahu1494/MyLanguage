@@ -32,5 +32,5 @@ void parseProgram();
   int parseTerm();
   int parseFactor();
  string tokenTypeToString(TokenType type);
-
+ int parseTypeOfVariable(string variableName);
  };

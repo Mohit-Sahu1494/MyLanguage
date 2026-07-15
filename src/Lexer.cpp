@@ -19,9 +19,13 @@ unordered_set<string> keyWords = {
     "true",
     "false",
     "end",
+     "if",
+     "else",
+     "else if",
 };
 
 unordered_set<string> operators = {
+
     "+",
     "-",
     "*",
@@ -30,6 +34,14 @@ unordered_set<string> operators = {
     "(",
     ")",
     ",",
+    "{",
+    "}",
+    "<",
+    ">",
+    "==",
+    "!=",
+    "<=",
+    ">=",
 };
 
 unordered_set<string> lineterminated = {
@@ -209,5 +221,7 @@ else if (peek() == ';')
 // {
 //     cout << t.value << endl;
 // }
+
 return tokens;
 }
+
